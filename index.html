@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trivia Project By Harriet</title>
+    <link rel="stylesheet" href="styles.css"/>
+</head>
+<body>
+    <main class="container">
+
+        <!-- This is a Welcome screen with a “Start Quiz” button. -->
+        <div id="start-screen">
+            <h1>Trivia Time!</h1>
+            <p>Test your knowledge and challenge yourself.</p>
+            <button id="start-btn">Start Quiz</button>
+        </div>
+
+        <!-- This div holds the question, answer options, feedback, and “Next Question” button.  -->
+
+        <div id="question-section" class="hide">
+            <h2 id="question-text">Question will display here</h2>
+            <form id="answers-form"></form>
+            <p id="feedback"></p>
+            <button id="next-btn" class="hide">Next Question</button>
+        </div>
+
+        <!-- This div is the end screen that shows the score, review of wrong answers, and a restart button. -->
+
+        <div id="end-screen" class="hide">
+            <h2>Quiz Finished</h2>
+            <p>Your Score: <span id="score-display"></span></p>
+            <div id="review-section"></div>
+            <button id="restart-btn"> Restart Quiz</button>
+        </div>
+
+        <footer>
+            <p> Created by Harriet Chepngeno-Moring Project</p>
+        </footer>
+
+    </main>
+    <script src="index.js"></script>
+</body>
+</html>
