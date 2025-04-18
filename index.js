@@ -13,6 +13,7 @@ document.addEventListener("DOMContentLoaded", function () {
     const exitBtn = document.getElementById("exit-btn");
     const reviewSection = document.getElementById("review-section");
     const footer = document.getElementById("footer");
+    const settingsForm = document.getElementById("settings-form");
 
     //Validate DOM elements
     if (!startBtn || !startScreen || !questionSection || !questionText || !answerForm || !feedback || !nextBtn || !endScreen || !scoreDisplay || !restartBtn || !exitBtn || !reviewSection || !footer) {
@@ -40,23 +41,46 @@ document.addEventListener("DOMContentLoaded", function () {
     let answered = false;
     let questions = [];
     let incorrectAnswers = []
+    let questionTimer;
+    let timeLeft = 15; // seconds per question
+    let totalStartTime;
 
-     // Start quiz when Start button is clicked
+     //Start quiz when Start button is clicked
     startBtn.addEventListener("click", () => {
+        //totalStartTime = Date.now();// start tracking time
         startScreen.classList.add("hide"); // hide the start screen
         footer.classList.add("hide"); // Hide the footer
         fetchQuestions(); // load qsns from API
     });
+    
+
+    settingsForm.addEventListener("submit", (e) => {
+    e.preventDefault();
+    totalStartTime = Date.now();
+    startScreen.classList.add("hide");
+    footer.classList.add("hide");
+
+    const amount = document.getElementById("amount").value;
+    const category = document.getElementById("category").value;
+    const difficulty = document.getElementById("difficulty").value;
+    const type = document.getElementById("type").value;
+
+    fetchQuestions(amount, category, difficulty, type);
+});
 
     // function for fetching qsn from the Trivia API
-    function fetchQuestions() {
+    function fetchQuestions(amount=5,category="", difficulty="",type="") {
         questionText.textContent = "Loading questions...";
         questionSection.classList.remove("hide")
         questionSection.classList.add("loading");
         nextBtn.disabled = true; // disabled next button during loading time.
-        //questionSection.classList.remove("loading")
 
-        fetch("https://opentdb.com/api.php?amount=5&category=9&type=multiple")
+        const url  = new URL ("https://opentdb.com/api.php")
+       url.searchParams.append("amount", amount);
+       if (category)url.searchParams.append("category", category);
+       if (difficulty)url.searchParams.append("difficulty", difficulty);
+       if (type)url.searchParams.append("type", type);
+        fetch(url)
             .then(response => response.json())
             .then(data => {
                 if (!data.results || data.results.length === 0) {
@@ -114,7 +138,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
         // combine correct and incorrect answers and shuffle
         const allAnswers = [...currentQuestion.incorrect_answers, currentQuestion.correct_answer];
-        const shuffleAnswers = allAnswers.sort(() => Math.random() - 0.5);
+        const shuffleAnswers = allAnswers.sort(() => 0.5 - Math.random());
 
         // render each answer as a radio button with a label
 
@@ -164,6 +188,9 @@ document.addEventListener("DOMContentLoaded", function () {
             questionSection.prepend(progress);
         }
         progress.textContent = `Question ${currentQuestionIndex + 1} of ${questions.length}`;
+
+        
+      startQuestionTimer();
     }
 
     //decode html entities from the API
@@ -223,7 +250,11 @@ document.addEventListener("DOMContentLoaded", function () {
                // adding delay before updating button and allowing nxt qsn
 
                setTimeout(() => {
+                if (currentQuestionIndex === questions.length -1){
+                    nextBtn.textContent = " Finish Quiz";
+                }else {
                 nextBtn.textContent = "Next Question"; // update button to next
+                }
                 answered = true;
                 
                }, 1000); // a second delay
@@ -269,10 +300,15 @@ document.addEventListener("DOMContentLoaded", function () {
                 reviewSection.appendChild(reviewItem);
             });
         } else {
-            const noReview = document.createElement("p");
-            noReview.textContent = "Perfect! No incorrect answers.";
-            reviewSection.appendChild(noReview);
+            const allCorrectAnswers = document.createElement("p");
+            allCorrectAnswers.textContent = "🎉 Congratulations! You got all questions right!";
+            reviewSection.appendChild(allCorrectAnswers);
         }
+        const totalTimeTaken = Math.floor((Date.now() - totalStartTime) / 1000);
+        const timeTakenElement = document.createElement("p");
+        timeTakenElement.textContent = `🕒 Total Time Taken: ${totalTimeTaken}s`;
+        scoreDisplay.insertAdjacentElement("afterend", timeTakenElement);
+
 
 }
 
@@ -294,4 +330,54 @@ document.addEventListener("DOMContentLoaded", function () {
         startScreen.classList.remove("hide");
         footer.classList.remove("hide"); // Show footer on start screen
     });
+    function startQuestionTimer() {
+        clearInterval(questionTimer);
+        timeLeft = 15;
+        const timerDisplay = document.getElementById("question-timer");
+        if (!timerDisplay) return;
+    
+        timerDisplay.textContent = `⏳ Time left: ${timeLeft}s`;
+    
+        questionTimer = setInterval(() => {
+            timeLeft--;
+            timerDisplay.textContent = `⏳ Time left: ${timeLeft}s`;
+            if (timeLeft <= 0) {
+                clearInterval(questionTimer);
+                autoSubmit();
+            }
+        }, 1000);
+    }
+    function autoSubmit() {
+        const correctAnswer = questions[currentQuestionIndex].correct_answer;
+        const allOptions = document.querySelectorAll('input[name="answer"]');
+    
+        allOptions.forEach(option => {
+            if (option.value === correctAnswer) {
+                option.parentElement.classList.add("correct");
+            } else if (option.checked && option.value !== correctAnswer) {
+                option.parentElement.classList.add("wrong");
+            }
+            option.disabled = true;
+        });
+    
+        feedback.textContent = `⏰ Time's up! Correct answer was: ${decodeHtml(correctAnswer)}`;
+        feedback.classList.add("wrong");
+    
+        incorrectAnswers.push({
+            question: questions[currentQuestionIndex].question,
+            selected: "No answer",
+            correct: correctAnswer
+        });
+    
+        setTimeout(() => {
+            if (currentQuestionIndex === questions.length - 1) {
+                nextBtn.textContent = "Finish Quiz";
+            } else {
+                nextBtn.textContent = "Next Question";
+            }
+            nextBtn.disabled = false;
+            answered = true;
+        }, 1000);
+    }
+    
 });
