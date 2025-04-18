@@ -22,7 +22,7 @@
 
 
 ## 🌐 Live Demo
-[Play Trivia Time!](https://moringa-sdf-pt10.github.io/harriet-chepngeno-trivia-project/)
+[Play Trivia Time!](https://moringa-sdf-pt10.github.io/Harriet-Chepngeno-Trivia-Project/)
 
 ## ✨ Features
 - **Start Screen**: Engaging welcome screen with quiz icon and settings form.
