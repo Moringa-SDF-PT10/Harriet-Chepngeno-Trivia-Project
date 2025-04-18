@@ -15,15 +15,52 @@
             <img src="assets/icon.png" alt="Quiz icon" class="quiz-icon">
             <h1>Trivia Time!</h1>
             <p>Test your knowledge and challenge yourself.</p>
-            <button id="start-btn">Start Quiz</button>
+            <div id="quiz-settings" class="quiz-settings">
+                <h2>Customize Your Quiz</h2>
+                <form id="settings-form">
+                    <label>
+                        Number of Questions:
+                        <input type="number" id="amount" min="1" max="50" value="5" required>
+                    </label>
+                    <label>
+                        Category:
+                        <select id="category">
+                            <option value="">Any Category</option>
+                            <option value="9">General Knowledge</option>
+                            <option value="21">Sports</option>
+                            <!-- Add more categories as needed -->
+                        </select>
+                    </label>
+                    <label>
+                        Difficulty:
+                        <select id="difficulty">
+                            <option value="">Any</option>
+                            <option value="easy">Easy</option>
+                            <option value="medium">Medium</option>
+                            <option value="hard">Hard</option>
+                        </select>
+                    </label>
+                    <label>
+                        Type:
+                        <select id="type">
+                            <option value="">Any</option>
+                            <option value="multiple">Multiple Choice</option>
+                            <option value="boolean">True / False</option>
+                        </select>
+                    </label>
+            <button type="submit" id="start-btn">Start Quiz</button>
+                </form>
+            </div>
         </div>
 
         <!-- This div holds the question, answer options, feedback, and “Next Question” button.  -->
 
         <div id="question-section" class="hide">
+            <p id="question-timer"></p>
+            <!-- <div id="timer" class="timer">Time Left: 30s</div> -->
             <h2 id="question-text">Question will display here</h2>
             <form id="answers-form"></form>
-            <p id="feedback"></p>
+            <p id="feedback" class="feedback"></p>
             <button id="next-btn" class="hide">Next Question</button>
         </div>
 
@@ -34,10 +71,12 @@
             <p>Your Score: <span id="score-display"></span></p>
             <div id="review-section"></div>
             <button id="restart-btn"> Restart Quiz</button>
+            <button id="exit-btn">Exit</button>
+
         </div>
 
-        <footer>
-            <p> Created by Harriet Chepngeno Moringa Project</p>
+        <footer id="footer">
+            <p> Created by Harriet Chepngeno | Moringa Project</p>
         </footer>
 
     </main>
